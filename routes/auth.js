@@ -1,7 +1,7 @@
 let express = require('express')
 let router = express.Router()
 let userController = require('../controllers/users')
-let { RegisterValidator, validatedResult } = require('../utils/validator')
+let { RegisterValidator, validatedResult, ChangePasswordValidator } = require('../utils/validator')
 let bcrypt = require('bcrypt')
 let jwt = require('jsonwebtoken')
 const { check } = require('express-validator')
@@ -32,6 +32,11 @@ router.post('/login', async function (req, res, next) {
             }, 'secret', {
                 expiresIn: '1h'
             })
+            res.cookie("TOKEN_LOGIN", token, {
+                maxAge: 24 * 3600 * 1000,
+                httpOnly: true,
+                secure: false
+            })
             res.send(token)
         } else {
             user.loginCount++;
@@ -51,7 +56,29 @@ router.post('/login', async function (req, res, next) {
     }
 
 })
-router.get('/me',checkLogin, function (req,res,next) {
+
+router.post("/logout", checkLogin, function (req, res, next) {
+    res.cookie("TOKEN_LOGIN", null, {
+        maxAge: 0,
+        httpOnly: true,
+        secure: false
+    })
+    res.send("logout thanh cong")
+})
+
+router.post('/changepassword', checkLogin, ChangePasswordValidator, async function (req, res, next) {
+    let { oldpassword, newpassword } = req.body;
+    if (bcrypt.compareSync(oldpassword, req.user.password)) {
+        req.user.password = newpassword;
+        await req.user.save();
+        res.send("doi pass thanh cong")
+    } else {
+        res.status(404).send("old password khong dung")
+    }
+
+})
+
+router.get('/me', checkLogin, function (req, res, next) {
     res.send(req.user)
 })
 

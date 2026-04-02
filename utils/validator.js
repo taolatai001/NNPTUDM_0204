@@ -62,7 +62,9 @@ module.exports = {
         body("role").isEmpty().withMessage("role khong duoc thay doi"),
         body("avatarUrl").optional().isArray().withMessage("image khong hop le"),
         body("avatarUrl.*").optional().isURL().withMessage("Url khong hop le")
+    ],
+    MessageValidator: [
+        body("messageContent.type").notEmpty().withMessage("type khong duoc de trong").bail().isIn(["file", "text"]).withMessage("type chi nhan file hoac text"),
+        body("messageContent.text").notEmpty().withMessage("text khong duoc de trong").bail().isString().withMessage("text phai la chuoi")
     ]
-
-
 }

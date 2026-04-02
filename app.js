@@ -28,7 +28,8 @@ app.use('/api/v1/products', require('./routes/products'))
 app.use('/api/v1/categories', require('./routes/categories'))
 app.use('/api/v1/roles', require('./routes/roles'))
 app.use('/api/v1/upload', require('./routes/upload'))
-mongoose.connect('mongodb://localhost:27017/NNPTUD-C5');
+app.use('/api/v1/messages', require('./routes/messages'))
+mongoose.connect('mongodb+srv://tailacanhsat_db_user:7vGc6kI88k9i33QD@cluster0.4hkgqgr.mongodb.net/NNPTUD-C5?retryWrites=true&w=majority&appName=Cluster0');
 mongoose.connection.on('connected', function () {
   console.log("connected");
 })
